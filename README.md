@@ -7,7 +7,7 @@ Learn more about this package from our blog: [Refactoring Stripe's API for Front
 ## npm
 
 ```
-npm install use-stripe-subscription
+npm install use-stripe-subscription-next
 ```
 
 [Package link](https://www.npmjs.com/package/use-stripe-subscription)

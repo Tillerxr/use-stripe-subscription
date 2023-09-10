@@ -1,9 +1,13 @@
+import React from 'react';
 import useSWR, { SWRConfig } from "swr";
 import { createContext, useContext, useMemo } from "react";
 import type { ReactNode } from "react";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe, Stripe } from "@stripe/stripe-js";
 
-const StripeContext = createContext(null);
+const StripeContext = createContext<{
+  clientPromise:Promise<Stripe | null>;
+  endpoint:string;
+}>(null!);
 
 export const SubscriptionProvider = ({
   children,
@@ -48,7 +52,10 @@ export interface redirectToCustomerPortalArgs {
 }
 
 export function useSubscription() {
-  const { clientPromise, endpoint } = useContext(StripeContext);
+  const { endpoint } = useContext<{
+    clientPromise: Promise<Stripe | null>;
+    endpoint:string}
+  >(StripeContext);
   const { data, error } = useSWR(`${endpoint}?action=useSubscription`);
 
   // Also wait for customer to load
@@ -159,7 +166,7 @@ export const Gate = ({
       } else if (feature) {
         const productFeatures =
           products
-            .find((x) => x.product.id === item.price.product)
+            .find((x:any) => x.product.id === item.price.product)
             .product.metadata.features?.split(",") || [];
         for (let productFeature of productFeatures) {
           if (productFeature === feature) {

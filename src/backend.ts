@@ -1,20 +1,18 @@
 import Stripe from "stripe";
 
-export const stripeApiClient = process.env.STRIPE_SECRET_KEY
-  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: null,
-    })
-  : null;
+export const stripeApiClient = new Stripe(`${process.env.STRIPE_SECRET_KEY}`, {
+  apiVersion:'2020-08-27'
+});
 
 export interface CustomerHasFeatureArgs {
   customerId: string;
   feature: string;
 }
-export const customerHasFeature = async ({ customerId, feature }) => {
+export const customerHasFeature = async ({ customerId, feature }:CustomerHasFeatureArgs) => {
   const customer = (await stripeApiClient.customers.retrieve(customerId, {
     expand: ["subscriptions"],
   })) as Stripe.Customer;
-  let subscription = customer.subscriptions.data[0] || null;
+  let subscription =  customer.subscriptions ? customer.subscriptions.data[0] || null : null;
   if (subscription) {
     subscription = await stripeApiClient.subscriptions.retrieve(
       subscription.id,
@@ -27,7 +25,14 @@ export const customerHasFeature = async ({ customerId, feature }) => {
   return false;
 };
 
-export const subscriptionHandler = async ({ customerId, query, body }) => {
+export interface SubscriptionHandlerArgs {
+  customerId: string;
+  query: {
+    action:'useSubscription' | 'redirectToCheckout' | 'redirectToCustomerPortal'
+  };
+  body:any;
+}
+export const subscriptionHandler = async ({ customerId, query, body }:SubscriptionHandlerArgs) => {
   if (query.action === "useSubscription") {
     return await useSubscription({ customerId });
   }
@@ -43,7 +48,10 @@ export const subscriptionHandler = async ({ customerId, query, body }) => {
   return { error: "Action not found" };
 };
 
-async function useSubscription({ customerId }) {
+export interface UseSubscriptionArgs{
+  customerId:string;
+}
+async function useSubscription({ customerId }:UseSubscriptionArgs) {
   // Retrieve products based on default billing portal config
 
   // First, retrieve the configuration
@@ -53,15 +61,19 @@ async function useSubscription({ customerId }) {
       expand: ["data.features.subscription_update.products"],
     }
   );
+  if (!configurations)
+    return null;
 
   // Stripe doesn't let us expand as much as we'd like.
   // Run this big mess to manually expand
 
+//  configurations.data[0].features.subscription_update.products.length;
+
   // We preserve the order stripe returns things in
   const products = new Array(
-    configurations.data[0].features.subscription_update.products.length
+    configurations.data[0].features.subscription_update.products?.length
   );
-  const pricePromises = configurations.data[0].features.subscription_update.products
+  const pricePromises = (configurations.data[0].features.subscription_update.products || [])
     .map((product, i) =>
       product.prices.map(async (price, j) => {
         const priceData = await stripeApiClient.prices.retrieve(price, {
@@ -98,14 +110,18 @@ async function useSubscription({ customerId }) {
   return { products, subscription };
 }
 
-async function redirectToCustomerPortal({ customerId, body }) {
+export interface RedirectArgs{
+  customerId:string;
+  body:any;
+}
+async function redirectToCustomerPortal({ customerId, body }:RedirectArgs) {
   return await stripeApiClient.billingPortal.sessions.create({
     customer: customerId,
     return_url: body.returnUrl,
   });
 }
 
-async function redirectToCheckout({ customerId, body }) {
+async function redirectToCheckout({ customerId, body }:RedirectArgs) {
   const configurations = await stripeApiClient.billingPortal.configurations.list(
     {
       is_default: true,
@@ -116,7 +132,7 @@ async function redirectToCheckout({ customerId, body }) {
   // Make sure the price ID is in here somewhere
   let go = false;
   for (let product of configurations.data[0].features.subscription_update
-    .products) {
+    .products || []) {
     for (let price of product.prices) {
       if (price === body.price) {
         go = true;
