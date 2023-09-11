@@ -1,2 +1,2 @@
-export * as Server from "./backend";
-export * as Client from "./react";
+export * from "./server";
+export * from "./client";

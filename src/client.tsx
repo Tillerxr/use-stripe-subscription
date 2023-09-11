@@ -1,7 +1,5 @@
-import React from 'react';
+import React, { createContext, useContext, useMemo, ReactNode } from "react";
 import useSWR, { SWRConfig } from "swr";
-import { createContext, useContext, useMemo } from "react";
-import type { ReactNode } from "react";
 import { loadStripe, Stripe } from "@stripe/stripe-js";
 
 const StripeContext = createContext<{

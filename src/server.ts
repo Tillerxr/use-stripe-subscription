@@ -28,7 +28,7 @@ export const customerHasFeature = async ({ customerId, feature }:CustomerHasFeat
 export interface SubscriptionHandlerArgs {
   customerId: string;
   query: {
-    action:'useSubscription' | 'redirectToCheckout' | 'redirectToCustomerPortal'
+    action:string;
   };
   body:any;
 }
