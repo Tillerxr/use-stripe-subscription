@@ -1,5 +1,7 @@
 import Stripe from "stripe";
 
+export interface Subscription extends Stripe.Subscription{}
+
 export const stripeApiClient = new Stripe(`${process.env.STRIPE_SECRET_KEY}`, {
   apiVersion:'2020-08-27'
 });
@@ -12,7 +14,7 @@ export const customerHasFeature = async ({ customerId, feature }:CustomerHasFeat
   const customer = (await stripeApiClient.customers.retrieve(customerId, {
     expand: ["subscriptions"],
   })) as Stripe.Customer;
-  let subscription =  customer.subscriptions ? customer.subscriptions.data[0] || null : null;
+  let subscription:Stripe.Subscription | null =  customer.subscriptions ? customer.subscriptions.data[0] || null : null;
   if (subscription) {
     subscription = await stripeApiClient.subscriptions.retrieve(
       subscription.id,
@@ -96,14 +98,18 @@ async function useSubscription({ customerId }:UseSubscriptionArgs) {
     )
     .flat();
 
-  let subscription;
-  const subscriptionPromise = stripeApiClient.customers
-    .retrieve(customerId, { expand: ["subscriptions"] })
-    .then((customer) => {
-      // This package is limited to one subscription at a time
-      // @ts-ignore
-      subscription = customer.subscriptions.data[0] || null;
-    });
+  let subscription:Stripe.Subscription | null = null;
+  const subscriptionPromise = new Promise<void>(async (resolve) => {
+    const customer:any = await stripeApiClient.customers.retrieve(customerId, { expand: ["subscriptions"] })
+    subscription = customer.subscriptions.data[0] || null;
+    if (subscription)
+    {
+      subscription = await stripeApiClient.subscriptions.retrieve(subscription.id, {
+        expand: ["plan.product"],
+      });
+    }
+    resolve()
+  })
 
   await Promise.all([...pricePromises, subscriptionPromise]);
 

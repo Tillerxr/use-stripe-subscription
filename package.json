@@ -2,7 +2,7 @@
   "name": "use-stripe-subscription-next",
   "license": "MIT",
   "homepage": "https://github.com/patoles/use-stripe-subscription",
-  "version": "1.0.26",
+  "version": "1.1.0",
   "scripts": {
     "rollup-build-lib": "rollup -c"
   },
