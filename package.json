@@ -1,13 +1,10 @@
 {
-  "name": "use-stripe-subscription-next",
+  "name": "@Tillerxr/-stripe-subscription-next",
   "license": "MIT",
-  "homepage": "https://github.com/patoles/use-stripe-subscription",
+  "homepage": "https://github.com/Tillerxr/use-stripe-subscription",
   "repository": {
     "type": "git",
     "url": "https://github.com/Tillerxr/use-stripe-subscription"
-  },
-  "publishConfig": {
-    "registry": "https://www.npmjs.com/~bitbard"
   },
   "version": "1.2.1",
   "scripts": {
