@@ -170,6 +170,7 @@ async function redirectToCheckout({ customerId, body }: RedirectArgs) {
 			allow_promotion_codes: body.allowPromotionCodes,
 			automatic_tax: { enabled: true },
 			billing_address_collection: "required",
+			customer_update: { address: "auto" },
 			subscription_data: {
 				trial_period_days: body.trialPeriodDays,
 			},
