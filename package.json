@@ -10,7 +10,7 @@
     "registry": "https://npm.pkg.github.com/tillerxr",
     "access": "public"
   },
-  "version": "1.2.4",
+  "version": "1.2.5",
   "scripts": {
     "rollup-build-lib": "rollup -c"
   },
