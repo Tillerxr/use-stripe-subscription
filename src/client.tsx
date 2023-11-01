@@ -44,6 +44,7 @@ export interface redirectToCheckoutArgs {
 	successUrl?: string
 	cancelUrl?: string
 	allowPromotionCodes?: boolean
+	trialPeriodDays?: number
 }
 
 export interface redirectToCustomerPortalArgs {

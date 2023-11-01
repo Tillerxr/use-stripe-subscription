@@ -168,6 +168,11 @@ async function redirectToCheckout({ customerId, body }: RedirectArgs) {
 			line_items: [{ price: body.price, quantity: 1 }],
 			mode: "subscription",
 			allow_promotion_codes: body.allowPromotionCodes,
+			automatic_tax: { enabled: true },
+			subscription_data: {
+				trial_from_plan: true,
+				trial_period_days: body.trialPeriodDays,
+			},
 		})
 	}
 	return { error: "Error" }

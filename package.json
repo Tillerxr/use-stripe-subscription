@@ -1,12 +1,16 @@
 {
-  "name": "@Tillerxr/-stripe-subscription-next",
+  "name": "@tillerxr/use-stripe-subscription-next",
   "license": "MIT",
-  "homepage": "https://github.com/Tillerxr/use-stripe-subscription",
+  "homepage": "https://github.com/tillerxr/use-stripe-subscription-next",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Tillerxr/use-stripe-subscription"
+    "url": "https://github.com/tillerxr/use-stripe-subscription-next"
   },
-  "version": "1.2.1",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/tillerxr",
+    "access": "public"
+  },
+  "version": "1.2.4",
   "scripts": {
     "rollup-build-lib": "rollup -c"
   },
