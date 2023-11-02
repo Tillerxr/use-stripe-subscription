@@ -159,6 +159,11 @@ async function redirectToCheckout({ customerId, body }: RedirectArgs) {
 			}
 		}
 	}
+	const subscription_data = body.trialPeriodDays
+		? {
+				trial_period_days: body.trialPeriodDays,
+		  }
+		: {}
 
 	if (go) {
 		return await stripeApiClient.checkout.sessions.create({
@@ -171,9 +176,7 @@ async function redirectToCheckout({ customerId, body }: RedirectArgs) {
 			automatic_tax: { enabled: true },
 			billing_address_collection: "required",
 			customer_update: { address: "auto" },
-			subscription_data: {
-				trial_period_days: body.trialPeriodDays,
-			},
+			subscription_data,
 		})
 	}
 	return { error: "Error" }
